@@ -1,0 +1,27 @@
+version: '3'
+services:
+  app:
+    image: chat_api
+    container_name: server-app
+    ports:
+      - '9000:9000'
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=root
+      - DB_NAME=chat_api
+    depends_on:
+      - db
+  db:
+    image: postgres:13
+    container_name: server-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=chat_api
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:

@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common'
 import { CreateChatDto } from './dto/create-chat.dto'
 import { Chat } from './entities/chat.entity'
 import { InjectRepository } from '@nestjs/typeorm'
@@ -17,6 +22,11 @@ export class ChatService {
   ) {}
   async create(createChatDto: CreateChatDto) {
     const { name, users } = createChatDto
+
+    const existingChat = await this.chatRepository.findOne({ where: { name } })
+    if (existingChat) {
+      throw new BadRequestException('Chat with this name already exists')
+    }
 
     const userInChat = await this.userRepository.find({
       where: users.map((id) => ({ id: +id })),

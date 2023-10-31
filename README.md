@@ -1,73 +1,61 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+Инструкция по Установке и Запуску Приложения Chat API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Предварительные требования:
+Убедитесь, что на вашем компьютере установлены Node.js, Docker, PostgreSQL, Docker.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Шаги по установке и запуску:
 
-## Description
+1. Скачивание проекта:
+   Скачайте и распакуйте архив с проектом в выбранное вами место на вашем компьютере.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+2. Подготовка Docker-Compose файла:
+   В корневой директории проекта хранится файл с именем docker-compose.yml, внесите туда доступы к своей базы данных
 
-## Installation
+3. Сборка Docker образа:
+   Откройте терминал и перейдите в корневую директорию проекта. Выполните следующую команду для сборки Docker образа:
 
-```bash
-$ npm install
-```
+<- docker build -t chat_api . ->
 
-## Running the app
+Работа с API:
+После успешного запуска приложения вы можете воспользоваться API, отправляя HTTP-запросы к серверу. Примеры запросов к API:
 
-```bash
-# development
-$ npm run start
+Добавить нового пользователя
+Запрос:
+curl --header "Content-Type: application/json" \
+ --request POST \
+ --data '{"username": "user_1"}' \
+ http://localhost:9000/users/add
+Ответ: id созданного пользователя или HTTP-код ошибки + описание ошибки.
 
-# watch mode
-$ npm run start:dev
+Создать новый чат между пользователями
+Запрос:
+curl --header "Content-Type: application/json" \
+ --request POST \
+ --data '{"name": "chat_1", "users": ["<USER_ID_1>", "<USER_ID_2>"]}' \
+ http://localhost:9000/chats/add
+Ответ: id созданного чата или HTTP-код ошибки или HTTP-код ошибки + описание ошибки.
+Количество пользователей в чате не ограничено.
 
-# production mode
-$ npm run start:prod
-```
+Отправить сообщение в чат от лица пользователя
+Запрос:
+curl --header "Content-Type: application/json" \
+ --request POST \
+ --data '{"chat": "<CHAT_ID>", "author": "<USER_ID>", "text": "hi"}' \
+ http://localhost:9000/messages/add
+Ответ: id созданного сообщения или HTTP-код ошибки + описание ошибки.
 
-## Test
+Получить список чатов конкретного пользователя
+Запрос:
+curl --header "Content-Type: application/json" \
+ --request POST \
+ --data '{"user": "<USER_ID>"}' \
+ http://localhost:9000/chats/get
+Ответ: cписок всех чатов со всеми полями, отсортированный по времени создания последнего сообщения в чате (от позднего к раннему). Или HTTP-код ошибки + описание ошибки.
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+Получить список сообщений в конкретном чате
+Запрос:
+curl --header "Content-Type: application/json" \
+ --request POST \
+ --data '{"chat": "<CHAT_ID>"}' \
+ http://localhost:9000/messages/get
+Ответ: список всех сообщений чата со всеми полями, отсортированный по времени создания сообщения (от раннего к позднему). Или HTTP-код ошибки + описание ошибки.
